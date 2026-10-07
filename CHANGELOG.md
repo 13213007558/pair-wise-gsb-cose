@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- RFC 9338 `CountersignatureV2` and `Countersignature0V2` generation, reading, and recursive verification
+
 ## [v1.3.1](https://github.com/cedarcode/cose-ruby/compare/v1.3.0...v1.3.1/) - 2024-08-12
 
 - Handling COSE EC keys encoded without leading 0 bytes in coordinates (#64). Credits to @waltercacau.

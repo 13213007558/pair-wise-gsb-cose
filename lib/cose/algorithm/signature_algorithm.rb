@@ -6,6 +6,13 @@ require "cose/error"
 module COSE
   module Algorithm
     class SignatureAlgorithm < Base
+      def sign(key, data)
+        compatible_key?(key) || raise(COSE::Error, "Incompatible key for signature")
+        sign_signature(key, data)
+      rescue OpenSSL::PKey::PKeyError => error
+        raise(COSE::Error, error.message)
+      end
+
       def verify(key, signature, verification_data)
         compatible_key?(key) || raise(COSE::Error, "Incompatible key for signature verification")
         valid_signature?(key, signature, verification_data) || raise(COSE::Error, "Signature verification failed")
@@ -32,6 +39,10 @@ module COSE
 
       def signature_algorithm_parameters
         { hash_function: hash_function }
+      end
+
+      def sign_signature(key, data)
+        to_pkey(key).sign(hash_function, data)
       end
 
       def to_cose_key(key)

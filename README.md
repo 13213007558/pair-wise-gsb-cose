@@ -172,6 +172,36 @@ sign1.verify(key, external_aad)
 sign1.payload
 ```
 
+RFC 9338 v2 countersignatures can be attached to a whole `COSE_Sign1` or to one of the signature items in a
+`COSE_Sign`. The original signature bytes are preserved. Use `verify_all` to receive one result per original
+signature and each nested countersignature; `:missing_key` is distinct from both `:valid` and `:invalid`.
+
+```ruby
+sign1 = COSE::Sign1.deserialize(cbor_data)
+
+countersigned_sign1 = sign1.countersign(
+  countersigning_key,
+  protected_headers: { 1 => -7 },
+  external_aad: external_aad
+)
+
+results = countersigned_sign1.verify_all(
+  { key.kid => key, countersigning_key.kid => countersigning_key },
+  external_aad: external_aad
+)
+results.first.status
+results.first.countersignatures
+
+sign = COSE::Sign.deserialize(cbor_data)
+countersigned_sign = sign.countersign(
+  countersigning_key,
+  target: 0,
+  protected_headers: { 1 => -7 },
+  external_aad: external_aad
+)
+sign.countersignatures_v2(0)
+```
+
 ### MAC Objects
 
 #### COSE_Mac

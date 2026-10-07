@@ -10,6 +10,10 @@ module COSE
     class EdDSA < SignatureAlgorithm
       private
 
+      def sign_signature(key, data)
+        to_pkey(key).sign(nil, data)
+      end
+
       def valid_key?(key)
         cose_key = to_cose_key(key)
 

@@ -28,6 +28,7 @@ module COSE
     def self.from_array(array)
       new(
         protected_headers: deserialize_headers(array[0]),
+        serialized_protected_headers: array[0],
         unprotected_headers: array[1],
         **keyword_arguments_for_initialize(array[2..-1])
       )
@@ -41,9 +42,18 @@ module COSE
       end
     end
 
-    def initialize(protected_headers:, unprotected_headers:)
+    def initialize(protected_headers:, unprotected_headers:, serialized_protected_headers: nil)
       @protected_headers = protected_headers
       @unprotected_headers = unprotected_headers
+      @serialized_protected_headers = serialized_protected_headers
+    end
+
+    def serialize
+      CBOR.encode(to_a)
+    end
+
+    def protected_header_bytes
+      @serialized_protected_headers || serialized_map(protected_headers)
     end
 
     def algorithm
@@ -66,6 +76,10 @@ module COSE
 
     def zero_length_bin_string
       ZERO_LENGTH_BIN_STRING
+    end
+
+    def to_a
+      raise NotImplementedError
     end
   end
 end
