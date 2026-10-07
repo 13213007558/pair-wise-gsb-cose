@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "cose/countersignature_v2"
 require "cose/encrypt"
 require "cose/encrypt0"
 require "cose/error"

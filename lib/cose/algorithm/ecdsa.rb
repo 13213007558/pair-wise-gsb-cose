@@ -21,6 +21,16 @@ module COSE
 
       private
 
+      def sign_signature(pkey, verification_data)
+        pkey.sign(hash_function, verification_data)
+      end
+
+      def format_signature(pkey, signature)
+        asn1 = OpenSSL::ASN1.decode(signature)
+        length = (pkey.group.degree + 7) / 8
+        asn1.value.map { |integer| integer.value.to_s(2).rjust(length, "\0") }.join
+      end
+
       def valid_key?(key)
         cose_key = to_cose_key(key)
 

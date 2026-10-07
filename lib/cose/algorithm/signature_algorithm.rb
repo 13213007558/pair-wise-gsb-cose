@@ -11,6 +11,14 @@ module COSE
         valid_signature?(key, signature, verification_data) || raise(COSE::Error, "Signature verification failed")
       end
 
+      def sign(key, verification_data)
+        compatible_key?(key) || raise(COSE::Error, "Incompatible key for signing")
+
+        pkey = to_pkey(key)
+        signature = sign_signature(pkey, verification_data)
+        format_signature(pkey, signature)
+      end
+
       def compatible_key?(key)
         valid_key?(key) && to_pkey(key)
       rescue COSE::Error
@@ -43,6 +51,14 @@ module COSE
         else
           raise(COSE::Error, "Don't know how to transform #{key.class} to COSE::Key")
         end
+      end
+
+      def sign_signature(pkey, verification_data)
+        pkey.sign(hash_function, verification_data)
+      end
+
+      def format_signature(_pkey, signature)
+        signature
       end
 
       def signature_algorithm_class

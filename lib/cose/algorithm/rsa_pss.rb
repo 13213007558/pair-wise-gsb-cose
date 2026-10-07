@@ -20,6 +20,10 @@ module COSE
 
       private
 
+      def sign_signature(pkey, verification_data)
+        pkey.sign_pss(hash_function, verification_data, salt_length: salt_length, mgf1_hash: hash_function)
+      end
+
       def valid_key?(key)
         cose_key = to_cose_key(key)
 
